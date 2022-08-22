@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+        <div class="main-nav">
+            <ul>
+                <li>
+                    <router-link to="home">home</router-link>
+                </li>
+                <li>
+                    <router-link to="about">about</router-link>
+                </li>
+            </ul>
+        </div>
+        <div class="main-body">
+            <router-view></router-view>
+        </div>
+        <script src="../assets/js/router.js" type="module"></script>
+        <script type="module">
+            import {createRouter} from "../assets/js/router.js";
+            import routes from "../assets/js/routes.js"
+            const router = new createRouter({
+                history:"",
+                routes,
+            })
+
+        </script>
+    </body>
+</html>

@@ -5,6 +5,16 @@
         <title>Title</title>
     </head>
     <body>
+        <script src="../assets/js/router.js" type="module"></script>
+        <script type="module">
+            import {createRouter} from "../assets/js/router.js";
+            import routes from "../assets/js/routes.js"
+            const router = new createRouter({
+                history:"",
+                routes,
+            })
+            router.beforeEach({})
+        </script>
         <div class="main-nav">
             <ul>
                 <li>
@@ -18,15 +28,6 @@
         <div class="main-body">
             <router-view></router-view>
         </div>
-        <script src="../assets/js/router.js" type="module"></script>
-        <script type="module">
-            import {createRouter} from "../assets/js/router.js";
-            import routes from "../assets/js/routes.js"
-            const router = new createRouter({
-                history:"",
-                routes,
-            })
 
-        </script>
     </body>
 </html>

@@ -1,4 +1,3 @@
-import {createRouter} from "../router.js";
 class routerLink extends HTMLElement{
     constructor(){
         super();
@@ -9,17 +8,20 @@ class routerLink extends HTMLElement{
     get replace(){
         return this.hasAttribute("replace")
     }
-    connectedCallback(routes){
-        if(!this.to) throw Error
+    connectedCallback(){
+        if(!this.to) throw Error;
         const link = document.createElement("a");
-        const result = routes.find(route=>route.name==this.attributes.to.value);
-        link.setAttribute("href",result.path);
         link.innerHTML=this.innerHTML;
+        const result = window.router.routes.find(route=>route.name==this.attributes.to.value);
+        if(!result) throw Error("route not find")
+        link.setAttribute("href",result.path);
         link.addEventListener("click",(e)=>{
             e.preventDefault();
-            // if(!this.replace) router.push(this.attributes.to.value);
-            // router.replace();
-            
+            if(this.replace){
+                window.router.replace(result);
+            }else{
+                window.router.push(result);
+            }
         })
         this.parentNode.insertBefore(link,this.nextSibling);
         this.remove();

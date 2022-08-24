@@ -1,34 +1,63 @@
 
 import routerLink from "./elements/routerLink.js";
 import routerView from "./elements/routerView.js";
+import useHistoryStateNavigation from "./historyNavigation.js";
 export class createRouter{
     constructor(data) {
         this.routes=data.routes;
-        this.historyState = { value: history.state };
+        const{history , location }=window;
+        this.currentLocation={
+            value : location.pathname
+        }
+        window.addEventListener("load",(event)=>{
+            console.log(event);
+        })
+        if(!history.state){
+            this.changeLocation(
+                this.currentLocation.value,
+                {
+                    back:null,
+                    current:this.currentLocation.value,
+                    forward:null,
+                    position:history.length-1,
+                },true)
+                this.renderComponent()
+        }
         window.router=this;
         window.customElements.define("router-link",routerLink);
         window.customElements.define("router-view",routerView);
+
         window.addEventListener('popstate',({state})=>{
-            const to=location.pathName;
-            const from = state.back;
-            console.log(history)
-            console.log(state)
+            this.renderComponent(state.currentName)
         })
+
     }
     renderComponent(component){
         const list = document.getElementsByTagName("router-view")[0];
-        component().then(response=>{
-            list.innerHTML=response.default.template;
-        });
+        if(typeof component === "function"){
+            component().then(response=>{
+                list.innerHTML=response.default.template;
+            });
+        }else{
+            const result = this.routes.find(route=>{
+                return route.name == component
+            })
+            result.component().then(response=>{
+                list.innerHTML=response.default.template
+            })
+        }
+
     };
     changeLocation(to,state , replace=false){
         window.history[replace ? "replaceState" : "pushState"](state,null,to);
     }
     push(to){
-        const currentState=Object.assign({},this.historyState,history.state,{forward:to})
-        const state = Object.assign({},{back:location.pathname,current:to.path,forward:null},{position:currentState.position? currentState.position+1 :1})
-        this.changeLocation(to.path , state)
+        const currentState=Object.assign({},history.state,{forward:to.path})
+        this.changeLocation(currentState.current, currentState, true);
+        const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
+        this.changeLocation(to.path , state);
         this.renderComponent(to.component);
+        this.currentLocation.value = to.path;
     };
     replace(to){
         this.changeLocation(to.path , true);
@@ -43,12 +72,6 @@ export class createRouter{
     beforeEach(){
 
     };
-    addRoute(){
-
-    };
-    removeRoute(){
-
-    }
 }
 function createWebHistory(){
     console.log(window.location.hash);

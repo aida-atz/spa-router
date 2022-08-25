@@ -1,3 +1,4 @@
+import useHistoryStateNavigation from "../historyNavigation.js"
 class routerLink extends HTMLElement{
     constructor(){
         super();
@@ -12,15 +13,14 @@ class routerLink extends HTMLElement{
         if(!this.to) throw Error;
         const link = document.createElement("a");
         link.innerHTML=this.innerHTML;
-        const result = window.router.routes.find(route=>route.name==this.attributes.to.value);
-        if(!result) throw Error("route not find")
+        const result = useHistoryStateNavigation.findRoute(this.attributes.to.value);
         link.setAttribute("href",result.path);
         link.addEventListener("click",(e)=>{
             e.preventDefault();
             if(this.replace){
-                window.router.replace(result);
+                useHistoryStateNavigation.replace(result);
             }else{
-                window.router.push(result);
+                useHistoryStateNavigation.push(result);
             }
         })
         this.parentNode.insertBefore(link,this.nextSibling);

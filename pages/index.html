@@ -8,10 +8,14 @@
         <script src="../assets/js/router.js" type="module"></script>
         <script type="module">
             import {createRouter} from "../assets/js/router.js";
-            import routes from "../assets/js/routes.js"
+            import routes from "../assets/js/routes.js";
+            import guards from "../assets/js/globalGuards.js"
             const router = new createRouter({
                 history:"",
                 routes,
+            })
+            router.beforeEach((to,from)=>{
+                return true
             })
         </script>
         <div class="main-nav">

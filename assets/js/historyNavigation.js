@@ -1,3 +1,4 @@
+import guards from "./globalGuards.js";
 class historyStateNavigation{
     constructor(){
         const{history , location }=window;
@@ -21,8 +22,19 @@ class historyStateNavigation{
         if(!result) throw Error("route not find");
         return result;
     }
-    changeLocation(to,state , replace=false){
-        window.history[replace ? "replaceState" : "pushState"](state,null,to);
+    navigate(to,from){
+        let globalGuards = [];
+        guards.beforeGuards.list().forEach(guard=>{
+            globalGuards.push(guards.guardToPromiseFn(guard, to, from));
+        })
+        return (guards.runGuardQueue(globalGuards))
+    }
+    changeLocation(to,from,state , replace=false){
+        this.navigate(to,from).then(()=>{
+            window.history[replace ? "replaceState" : "pushState"](state,null,to.path);
+        }).catch((err)=>{
+            throw err
+        })
     }
     renderComponent(component){
         const list = document.getElementsByTagName("router-view")[0];
@@ -40,15 +52,27 @@ class historyStateNavigation{
         }
     }
     push(to){
-        const currentState=Object.assign({},history.state,{forward:to.path})
-        this.changeLocation(currentState.current, currentState, true);
+        let toRoute = {};
+        let fromRoute = {};
+        const currentState=Object.assign({},history.state,{forward:to.path});
+        toRoute.name=fromRoute.name=currentState.currentName;
+        toRoute.path=fromRoute.path=currentState.current;
+        this.changeLocation(toRoute , fromRoute, currentState, true);
         const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
-        this.changeLocation(to.path , state);
+        toRoute.name=state.currentName;
+        toRoute.path=state.current;
+        fromRoute.name=currentState.currentName;
+        fromRoute.path=currentState.current;
+        this.changeLocation(toRoute , fromRoute , state);
         this.renderComponent(to.component);
         this.currentLocation.value = to.path;
     }
     replace(to){
-        this.changeLocation(to.path, history.state , true);
+        let toRoute = {};
+        let fromRoute = {};
+        toRoute.name=fromRoute.name=to.name;
+        toRoute.path=fromRoute.path=to.path;
+        this.changeLocation(toRoute , fromRoute , history.state , true);
         this.renderComponent(to.component)
     }
 }

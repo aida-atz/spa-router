@@ -9,5 +9,10 @@ const routes=[
         path:"/about",
         component:()=>import("../../views/about.js"),
     },
+    {
+        name:"contact",
+        path:"/contact",
+        component:()=> import("../../views/contact.js"),
+    },
 ]
 export default routes;

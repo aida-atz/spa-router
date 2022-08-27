@@ -2,6 +2,7 @@
 import routerLink from "./elements/routerLink.js";
 import routerView from "./elements/routerView.js";
 import useHistoryStateNavigation from "./historyNavigation.js";
+import guards from "./globalGuards.js";
 export class createRouter{
     constructor(data) {
         this.routes=data.routes;
@@ -30,10 +31,10 @@ export class createRouter{
     };
     previous(){
         
-    };
-    beforeEach(){
-
-    };
+    }
+    beforeEach(handler){
+        guards.beforeGuards.add(handler);
+    }
 }
 function createWebHistory(){
     console.log(window.location.hash);

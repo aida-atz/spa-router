@@ -6,4 +6,4 @@ app.use(express.static(path.resolve(__dirname)))
 app.get("/*",(reg,res)=>{
     res.sendFile(path.resolve(__dirname,"pages","index.html"))
 })
-app.listen(5000,()=>console.log("server is running ..."))
+app.listen(5051,()=>console.log("server is running ..."))

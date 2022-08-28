@@ -1,4 +1,5 @@
 import instanceGuards from "./globalGuards.js";
+import routes from "./routes.js";
 class historyStateNavigation{
     constructor(){
         const{history , location }=window;
@@ -54,7 +55,7 @@ class historyStateNavigation{
         }
     }
     push(to,from){
-        this.navigate(to,from).then((failure)=>{
+        this.navigate(to,from).then(()=>{
             const currentState=Object.assign({},history.state,{forward:to.path});
             this.replace(from, currentState);
             const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});

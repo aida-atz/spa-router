@@ -8,14 +8,20 @@ const routes=[
         name:"about",
         path:"/about",
         component:()=>import("../../views/about.js"),
+        children:[
+            {
+                name:"aboutUser",
+                path:"user",
+                component:()=>import("../../views/aboutUser.js")
+            }
+        ]
     },
     {
         name:"contact",
         path:"/contact",
         component:()=> import("../../views/contact.js"),
         beforeEnter: (to, from) => {
-            console.log("before Enter");
-            return {path:"/about"}
+            return true
         },
     },
 ]

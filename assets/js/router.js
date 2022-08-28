@@ -8,7 +8,6 @@ export class createRouter{
         this.routes=data.routes;
         this.currentRouteState= window.history.state;
             window.addEventListener("load",()=>{
-                console.log(this.currentRouteState.current);
                 this.replace(this.currentRouteState.current)
             })
         window.router=this;
@@ -21,13 +20,16 @@ export class createRouter{
         this.currentLocation = window.location.pathname;
     }
     push(to){
+        console.log(to);
         to = useHistoryStateNavigation.findRouteByPath(to);
         const from = useHistoryStateNavigation.findRouteByPath(this.currentLocation);
         useHistoryStateNavigation.push(to , from);
+        // console.log(to,from);
     };
     replace(to){
         to = useHistoryStateNavigation.findRouteByPath(to);
         useHistoryStateNavigation.replace(to);
+        // console.log(to);
     };
     beforeEach(handler){
         guards.beforeGuards.add(handler);

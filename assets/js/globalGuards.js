@@ -3,17 +3,7 @@ class guards{
     constructor(){
         this.beforeGuards = this.useCallbacks();
         this.afterGuards = this.useCallbacks();
-        this.pendingLocation = {
-            path: '/',
-            name: undefined,
-            params: {},
-            query: {},
-            hash: '',
-            fullPath: '/',
-            matched: [],
-            meta: {},
-            redirectedFrom: undefined,
-        };
+        this.beforeResolveGuards=this.useCallbacks();
     };
     useCallbacks() {
         let handlers = [];

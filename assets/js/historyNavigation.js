@@ -1,4 +1,4 @@
-import guards from "./globalGuards.js";
+import instanceGuards from "./globalGuards.js";
 class historyStateNavigation{
     constructor(){
         const{history , location }=window;
@@ -17,24 +17,26 @@ class historyStateNavigation{
             this.renderComponent()
         }
     }
-    findRoute(name){
-        const result = window.router.routes.find(route=>route.name==name);
+    findRouteByPath(path){
+        const result = window.router.routes.find(route=>route.path==path);
         if(!result) throw Error("route not find");
         return result;
     }
     navigate(to,from){
-        let globalGuards = [];
-        guards.beforeGuards.list().forEach(guard=>{
-            globalGuards.push(guards.guardToPromiseFn(guard, to, from));
+        let guards = [];
+        instanceGuards.beforeGuards.list().forEach(guard=>{
+            guards.push(instanceGuards.guardToPromiseFn(guard, to, from));
         })
-        return (guards.runGuardQueue(globalGuards))
+        return (instanceGuards.runGuardQueue(guards).then(()=>{
+            guards=[];
+            if(to.beforeEnter){
+                guards.push(instanceGuards.guardToPromiseFn(to.beforeEnter,to,from))
+            }
+            return instanceGuards.runGuardQueue(guards);
+        }))
     }
-    changeLocation(to,from,state , replace=false){
-        this.navigate(to,from).then(()=>{
-            window.history[replace ? "replaceState" : "pushState"](state,null,to.path);
-        }).catch((err)=>{
-            throw err
-        })
+    changeLocation(to,state , replace=false){
+        window.history[replace ? "replaceState" : "pushState"](state,null,to.path)
     }
     renderComponent(component){
         const list = document.getElementsByTagName("router-view")[0];
@@ -51,29 +53,23 @@ class historyStateNavigation{
             })
         }
     }
-    push(to){
-        let toRoute = {};
-        let fromRoute = {};
-        const currentState=Object.assign({},history.state,{forward:to.path});
-        toRoute.name=fromRoute.name=currentState.currentName;
-        toRoute.path=fromRoute.path=currentState.current;
-        this.changeLocation(toRoute , fromRoute, currentState, true);
-        const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
-        toRoute.name=state.currentName;
-        toRoute.path=state.current;
-        fromRoute.name=currentState.currentName;
-        fromRoute.path=currentState.current;
-        this.changeLocation(toRoute , fromRoute , state);
-        this.renderComponent(to.component);
-        this.currentLocation.value = to.path;
+    push(to,from){
+        this.navigate(to,from).then((failure)=>{
+            const currentState=Object.assign({},history.state,{forward:to.path});
+            this.replace(from, currentState);
+            const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
+            this.changeLocation(to , state);
+            instanceGuards.triggerAfterEach(to , from);
+            this.renderComponent(to.component);
+            this.currentLocation.value = to.path;
+        }).catch(err=>{
+            throw err
+        })
+
     }
-    replace(to){
-        let toRoute = {};
-        let fromRoute = {};
-        toRoute.name=fromRoute.name=to.name;
-        toRoute.path=fromRoute.path=to.path;
-        this.changeLocation(toRoute , fromRoute , history.state , true);
-        this.renderComponent(to.component)
+    replace(to ,state=null){
+        this.changeLocation(to , state ? state : history.state , true);
+        this.renderComponent(to.component);
     }
 }
 const useHistoryStateNavigation = new historyStateNavigation();

@@ -13,6 +13,10 @@ const routes=[
         name:"contact",
         path:"/contact",
         component:()=> import("../../views/contact.js"),
+        beforeEnter: (to, from) => {
+            console.log("before Enter");
+            return {path:"/about"}
+        },
     },
 ]
 export default routes;

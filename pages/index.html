@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Title</title>
+        <title>spa router</title>
     </head>
     <body>
         <script src="../assets/js/router.js" type="module"></script>
@@ -15,16 +15,23 @@
                 routes,
             })
             router.beforeEach((to,from)=>{
+                console.log("before Each");
                 return true
+            })
+            router.afterEach((to,from)=>{
+                console.log("after Each");
             })
         </script>
         <div class="main-nav">
             <ul>
                 <li>
-                    <router-link to="home">home</router-link>
+                    <router-link to="/home">home</router-link>
                 </li>
                 <li>
-                    <router-link to="about">about</router-link>
+                    <router-link to="/about">about</router-link>
+                </li>
+                <li>
+                    <router-link to="/contact">contact</router-link>
                 </li>
             </ul>
         </div>

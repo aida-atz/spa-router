@@ -1,4 +1,5 @@
-class globalGuards{
+import useHistoryStateNavigation from "./historyNavigation.js"
+class guards{
     constructor(){
         this.beforeGuards = this.useCallbacks();
         this.afterGuards = this.useCallbacks();
@@ -29,26 +30,6 @@ class globalGuards{
             list: () => handlers,
         };
     };
-    // canOnlyBeCalledOnce(next, to, from) {
-    //     let called = 0;
-    //     return function () {
-    //         if (called++ === 1)
-    //         throw new Error(`The "next" callback was called more than once in one navigation guard when going from "${from.path}" to "${to.path}". It should be called exactly one time in each navigation guard. This will fail in production.`)
-    //         // @ts-expect-error: we put it in the original one because it's easier to check
-    //         next._called = true;
-    //         if (called === 1)
-    //             next.apply(null, arguments);
-    //     };
-    // }
-    checkCanceledNavigation(to, from) {
-        if (this.pendingLocation !== to) {
-            return new Error(`Navigation cancelled from "${from.path}" to "${to.path}" with a new navigation.`)
-        }
-    }
-    checkCanceledNavigationAndReject(to, from) {
-        const error = this.checkCanceledNavigation(to, from);
-        return error ? Promise.reject(error) : Promise.resolve();
-    }
     runGuardQueue(guards) {
         return guards.reduce((promise, guard) => promise.then(() => guard()), Promise.resolve());
     }
@@ -56,17 +37,17 @@ class globalGuards{
         return () => new Promise((resolve, reject) => {
             const next = (valid) => {
                 if (valid === false){
-                    console.log("valid = false");
                     reject(new Error(`Navigation aborted from "${from.path}" to "${to.path}" via a navigation guard.`));
                 }
                 else if (valid instanceof Error) {
                     reject(valid);
                 }
                 else if (typeof valid == "object") {
-                    reject(new Error`Redirected from "${from.path}" to "${to.path}" via a navigation guard.`);
+                    const route = useHistoryStateNavigation.findRouteByPath(valid.path);
+                    useHistoryStateNavigation.push( route , from)
+                    reject(new Error`Redirected from "${from.path}" to "${route.path}" via a navigation guard.`);
                 }
                 else {
-                    console.log("resolve");
                     resolve();
                 }
             };
@@ -76,6 +57,10 @@ class globalGuards{
             guardCall.catch(err => reject(err));
         });
     }
+    triggerAfterEach(to, from) {
+        for (const guard of this.afterGuards.list())
+            guard(to, from);
+    }
 }
-const guards = new globalGuards;
-export default guards;
+const instanceGuards = new guards;
+export default instanceGuards;

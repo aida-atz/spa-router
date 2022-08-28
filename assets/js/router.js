@@ -8,7 +8,8 @@ export class createRouter{
         this.routes=data.routes;
         this.currentRouteState= window.history.state;
             window.addEventListener("load",()=>{
-                this.replace({name:this.currentRouteState.currentName})
+                console.log(this.currentRouteState.current);
+                this.replace(this.currentRouteState.current)
             })
         window.router=this;
         window.customElements.define("router-link",routerLink);
@@ -17,23 +18,22 @@ export class createRouter{
             const result = useHistoryStateNavigation.findRoute(state.currentName);
             useHistoryStateNavigation.renderComponent(result.component);
         })
+        this.currentLocation = window.location.pathname;
     }
-    push({name}){
-        const result = useHistoryStateNavigation.findRoute(name);
-        useHistoryStateNavigation.push(result);
+    push(to){
+        to = useHistoryStateNavigation.findRouteByPath(to);
+        const from = useHistoryStateNavigation.findRouteByPath(this.currentLocation);
+        useHistoryStateNavigation.push(to , from);
     };
-    replace({name}){
-        const result = useHistoryStateNavigation.findRoute(name);
-        useHistoryStateNavigation.replace(result);
+    replace(to){
+        to = useHistoryStateNavigation.findRouteByPath(to);
+        useHistoryStateNavigation.replace(to);
     };
-    next(){
-        
-    };
-    previous(){
-        
-    }
     beforeEach(handler){
         guards.beforeGuards.add(handler);
+    }
+    afterEach(handler){
+        guards.afterGuards.add(handler);
     }
 }
 function createWebHistory(){

@@ -13,14 +13,13 @@ class routerLink extends HTMLElement{
         if(!this.to) throw Error;
         const link = document.createElement("a");
         link.innerHTML=this.innerHTML;
-        const result = useHistoryStateNavigation.findRoute(this.attributes.to.value);
-        link.setAttribute("href",result.path);
+        link.setAttribute("href",this.attributes.to.value);
         link.addEventListener("click",(e)=>{
             e.preventDefault();
             if(this.replace){
-                useHistoryStateNavigation.replace(result);
+                window.router.replace(this.attributes.to.value)
             }else{
-                useHistoryStateNavigation.push(result);
+                window.router.push(this.attributes.to.value)
             }
         })
         this.parentNode.insertBefore(link,this.nextSibling);

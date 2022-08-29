@@ -6,6 +6,8 @@ import guards from "./globalGuards.js";
 export class createRouter{
     constructor(data) {
         this.routes=data.routes;
+        this.base = data.history;
+        if(!this.base) throw new Error('Provide the "history" option when calling "createRouter()":');
         this.currentRouteState= window.history.state;
             window.addEventListener("load",()=>{
                 this.replace(this.currentRouteState.current)
@@ -20,16 +22,13 @@ export class createRouter{
         this.currentLocation = window.location.pathname;
     }
     push(to){
-        console.log(to);
-        to = useHistoryStateNavigation.findRouteByPath(to);
-        const from = useHistoryStateNavigation.findRouteByPath(this.currentLocation);
+        to = useHistoryStateNavigation.findRouteByPath(to,this.base);
+        const from = useHistoryStateNavigation.findRouteByPath(this.currentLocation,this.base);
         useHistoryStateNavigation.push(to , from);
-        // console.log(to,from);
     };
     replace(to){
         to = useHistoryStateNavigation.findRouteByPath(to);
         useHistoryStateNavigation.replace(to);
-        // console.log(to);
     };
     beforeEach(handler){
         guards.beforeGuards.add(handler);
@@ -37,8 +36,4 @@ export class createRouter{
     afterEach(handler){
         guards.afterGuards.add(handler);
     }
-}
-function createWebHistory(){
-    console.log(window.location.hash);
-    window.location.replace("/#/");
 }

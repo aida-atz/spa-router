@@ -1,5 +1,4 @@
 import instanceGuards from "./globalGuards.js";
-import routes from "./routes.js";
 class historyStateNavigation{
     constructor(){
         const{history , location }=window;
@@ -18,10 +17,15 @@ class historyStateNavigation{
             this.renderComponent()
         }
     }
-    findRouteByPath(path){
+    findRouteByPath(path,base){
+        console.log(path);
         const result = window.router.routes.find(route=>route.path==path);
+        console.log(result);
         if(!result) throw Error("route not find");
         return result;
+        // if(base.indexOf("#")){
+
+        // }
     }
     navigate(to,from){
         let guards = [];
@@ -37,6 +41,8 @@ class historyStateNavigation{
         }))
     }
     changeLocation(to,state , replace=false){
+        console.log(to);
+        const base = "/#"
         window.history[replace ? "replaceState" : "pushState"](state,null,to.path)
     }
     renderComponent(component){

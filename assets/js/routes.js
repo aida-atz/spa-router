@@ -24,5 +24,13 @@ const routes=[
             return true
         },
     },
+    {
+        name:"user",
+        path:"/user/:id",
+        component:()=> import("../../views/contact.js"),
+        beforeEnter: (to, from) => {
+            return true
+        },
+    },
 ]
 export default routes;

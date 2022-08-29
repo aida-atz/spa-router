@@ -11,16 +11,17 @@
             import routes from "../assets/js/routes.js";
             import guards from "../assets/js/globalGuards.js"
             const router = new createRouter({
-                history:"",
+                history:"#",
                 routes,
             })
-            router.beforeEach((to,from)=>{
-                console.log("before Each");
-                return true
-            })
-            router.afterEach((to,from)=>{
-                console.log("after Each");
-            })
+            // router.beforeEach((to,from)=>{
+            //     console.log("before Each");
+            //     return true;
+            // })
+            // router.afterEach((to,from)=>{
+            //     console.log("after Each");
+            //     return true;
+            // })
         </script>
         <div class="main-nav">
             <ul>

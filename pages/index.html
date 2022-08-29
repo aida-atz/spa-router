@@ -7,13 +7,14 @@
     <body>
         <script src="../assets/js/router.js" type="module"></script>
         <script type="module">
-            import {createRouter} from "../assets/js/router.js";
+            import {createRouter , createWebHashHistory,createWebHistory} from "../assets/js/router.js";
             import routes from "../assets/js/routes.js";
             import guards from "../assets/js/globalGuards.js"
             const router = new createRouter({
-                history:"#",
+                history:createWebHashHistory(),
                 routes,
             })
+
             // router.beforeEach((to,from)=>{
             //     console.log("before Each");
             //     return true;
@@ -23,7 +24,7 @@
             //     return true;
             // })
         </script>
-        <div class="main-nav">
+        <!-- <div class="main-nav">
             <ul>
                 <li>
                     <router-link to="/home">home</router-link>
@@ -35,7 +36,7 @@
                     <router-link to="/contact">contact</router-link>
                 </li>
             </ul>
-        </div>
+        </div> -->
         <div class="main-body">
             <router-view></router-view>
         </div>

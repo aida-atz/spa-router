@@ -19,6 +19,7 @@ const routes=[
         path:"/contact",
         component:()=> import("../../views/contact.js"),
         beforeEnter: (to, from) => {
+            console.log("beforeEnter");
             return true
         },
     },

@@ -3,17 +3,11 @@ class guards{
     constructor(){
         this.beforeGuards = this.useCallbacks();
         this.afterGuards = this.useCallbacks();
-        this.beforeResolveGuards=this.useCallbacks();
     };
     useCallbacks() {
         let handlers = [];
         function add(handler) {
             handlers.push(handler);
-            return () => {
-                const i = handlers.indexOf(handler);
-                if (i > -1)
-                    handlers.splice(i, 1);
-            };
         }
         return {
             add,
@@ -34,7 +28,7 @@ class guards{
                 }
                 else if (typeof valid == "object") {
                     const route = useHistoryStateNavigation.findRouteByPath(valid.path);
-                    useHistoryStateNavigation.push( route , from)
+                    useHistoryStateNavigation.push( route , from);
                     reject(new Error`Redirected from "${from.path}" to "${route.path}" via a navigation guard.`);
                 }
                 else {

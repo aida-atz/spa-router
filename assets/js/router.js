@@ -5,12 +5,22 @@ import useHistoryStateNavigation from "./historyNavigation.js";
 import guards from "./globalGuards.js";
 export class createRouter{
     constructor(data) {
+        window.router=this;
         this.routes=data.routes;
         this.currentRouteState= window.history.state;
-            window.addEventListener("load",()=>{
-                this.replace(this.currentRouteState.current)
+        if(!this.currentRouteState){
+            this.replace(location.pathname,{
+                back:null,
+                current:location.pathname,
+                currentName:null,
+                forward:null,
+                position:window.history.length-1,
             })
-        window.router=this;
+        }
+        window.addEventListener("load",()=>{
+            this.replace(this.currentRouteState.current)
+        })
+    
         window.customElements.define("router-link",routerLink);
         window.customElements.define("router-view",routerView);
         window.addEventListener('popstate',({state})=>{
@@ -23,9 +33,9 @@ export class createRouter{
         const from = useHistoryStateNavigation.findRouteByPath(this.currentRouteState.current);
         useHistoryStateNavigation.push(to , from);
     };
-    replace(to){
+    replace(to , state=null){
         to = useHistoryStateNavigation.findRouteByPath(to);
-        useHistoryStateNavigation.replace(to);
+        useHistoryStateNavigation.replace(to,state);
     };
     beforeEach(handler){
         guards.beforeGuards.add(handler);
@@ -35,10 +45,8 @@ export class createRouter{
     }
 }
 export function createWebHashHistory(base){
-    console.log("createWebHashHistory");
     useHistoryStateNavigation.createWebHashHistory(base);
 }
 export function createWebHistory(base){
-    console.log("createWebHistory");
     useHistoryStateNavigation.createWebHistory(base);
 }

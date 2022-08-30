@@ -1,21 +1,10 @@
 import instanceGuards from "./globalGuards.js";
 class historyStateNavigation{
     constructor(){
-        const{history , location }=window;
+        const{location}=window;
         this.base="";
         this.currentLocation={
             value : location.pathname
-        }
-        if(!history.state){
-            this.changeLocation(
-                this.currentLocation.value,
-                {
-                    back:null,
-                    current:this.currentLocation.value,
-                    // currentName:this.findRouteByPath(this.currentLocation.value),
-                    forward:null,
-                    position:history.length-1,
-                },true)
         }
     }
     findRouteByPath(path){
@@ -36,13 +25,18 @@ class historyStateNavigation{
             return instanceGuards.runGuardQueue(guards);
         }))
     }
-    changeLocation(to,state , replace=false){
-        console.log(to ,state)
-        const currentLocation = {
-            value: this.createCurrentLocation(),
-        };
-        const url = this.base+to;
-        window.history[replace ? "replaceState" : "pushState"](state,null,url)
+    changeLocation(to,from,state , replace=false){
+        const url = this.base+to.path;
+        if(state==history.state){ /**reload page */
+            window.history["replaceState"](state,null,url);
+            this.renderComponent(to.component);
+        }else{
+           this.navigate(to,from).then(()=>{
+            window.history[replace ? "replaceState" : "pushState"](state,null,url);
+            if(!replace)this.renderComponent(to.component);
+           }).catch(err=>{throw err}) 
+        }
+      
     }
     renderComponent(component){
         const list = document.getElementsByTagName("router-view")[0];
@@ -62,11 +56,10 @@ class historyStateNavigation{
     push(to,from){
         this.navigate(to,from).then(()=>{
             const currentState=Object.assign({},history.state,{forward:to.path});
-            this.replace(from, currentState);
-            const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
-            this.changeLocation(to.path , state);
+            this.changeLocation(from,from,currentState,true)
+            const state = Object.assign({},{back:currentState.current,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
+            this.changeLocation(to,from , state);
             instanceGuards.triggerAfterEach(to , from);
-            this.renderComponent(to.component);
             this.currentLocation.value = to.path;
         }).catch(err=>{
             throw err
@@ -74,8 +67,7 @@ class historyStateNavigation{
 
     }
     replace(to ,state=null){
-        this.changeLocation(to.path , state ? state : history.state , true);
-        this.renderComponent(to.component);
+        this.changeLocation(to, to , state ? state : history.state , true);
     }
 
     /**

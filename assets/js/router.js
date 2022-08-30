@@ -6,8 +6,6 @@ import guards from "./globalGuards.js";
 export class createRouter{
     constructor(data) {
         this.routes=data.routes;
-        // this.base = data.history;
-        // if(!this.base) throw new Error('Provide the "history" option when calling "createRouter()":');
         this.currentRouteState= window.history.state;
             window.addEventListener("load",()=>{
                 this.replace(this.currentRouteState.current)
@@ -19,11 +17,10 @@ export class createRouter{
             const result = useHistoryStateNavigation.findRouteByPath(state.current);
             useHistoryStateNavigation.renderComponent(result.component);
         })
-        this.currentLocation = window.location.pathname;
     }
     push(to){
         to = useHistoryStateNavigation.findRouteByPath(to);
-        const from = useHistoryStateNavigation.findRouteByPath(this.currentLocation);
+        const from = useHistoryStateNavigation.findRouteByPath(this.currentRouteState.current);
         useHistoryStateNavigation.push(to , from);
     };
     replace(to){

@@ -16,13 +16,10 @@ class historyStateNavigation{
                     forward:null,
                     position:history.length-1,
                 },true)
-            this.renderComponent()
         }
     }
     findRouteByPath(path){
-        console.log(path);
         const result = window.router.routes.find(route=>route.path==path);
-        console.log(result);
         if(!result) throw Error("route not find");
         return result;
     }
@@ -40,16 +37,11 @@ class historyStateNavigation{
         }))
     }
     changeLocation(to,state , replace=false){
+        console.log(to ,state)
         const currentLocation = {
             value: this.createCurrentLocation(),
         };
-        const hashIndex = this.base.indexOf('#');
-        const url = hashIndex > -1
-            ? (window.location.host && document.querySelector('base')
-                ? this.base
-                : this.base.slice(hashIndex)) + to
-            : window.location.protocol + '//' + window.location.host + this.base + to;
-            // console.log(url , to.path);
+        const url = this.base+to;
         window.history[replace ? "replaceState" : "pushState"](state,null,url)
     }
     renderComponent(component){
@@ -59,7 +51,7 @@ class historyStateNavigation{
                 list.innerHTML=response.default.template;
             });
         }else{
-            const result = this.routes.find(route=>{
+            const result = window.history.routes.find(route=>{
                 return route.name == component
             })
             result.component().then(response=>{
@@ -70,10 +62,8 @@ class historyStateNavigation{
     push(to,from){
         this.navigate(to,from).then(()=>{
             const currentState=Object.assign({},history.state,{forward:to.path});
-            console.log(from , currentState);
             this.replace(from, currentState);
             const state = Object.assign({},{back:this.currentLocation.value,current:to.path,forward:null},{ position: currentState.position + 1},{currentName:to.name});
-            console.log(state);
             this.changeLocation(to.path , state);
             instanceGuards.triggerAfterEach(to , from);
             this.renderComponent(to.component);
@@ -87,6 +77,17 @@ class historyStateNavigation{
         this.changeLocation(to.path , state ? state : history.state , true);
         this.renderComponent(to.component);
     }
+
+    /**
+     * checks the base includes hash
+     * @example () ---> https://example.com/#/
+     * @example ("/folder/") ---> https://example.com/folder/#/
+     * @example ("/folder/#/app/") ---> https://example.com/folder/#/app/
+     * @example ("/folder") ---> https://example.com/#/
+     * @param {string} base - It is a phrase that is added after the host
+     * @return {string} - standard base
+     */
+
     createWebHashHistory(base){
         base = location.host ? base || location.pathname : "";
         if(!base.includes("#")) base+="#";
@@ -97,14 +98,11 @@ class historyStateNavigation{
            base="/"
        }
         base = base.replace(/\/$/ , ""); //آخرین اسلش را حذف می کند 
-       
-  
         this.base=base;
-        console.log(this.base);
     }
     createCurrentLocation(){
         const hashPos = this.base.indexOf('#');
-        if (hashPos > -1) {
+        if (hashPos > -1) { 
             let slicePos = window.location.hash.includes(this.base.slice(hashPos))
                 ? this.base.slice(hashPos).length
                 : 1;
@@ -114,7 +112,7 @@ class historyStateNavigation{
                 pathFromHash = '/' + pathFromHash;
             return this.stripBase(pathFromHash, '');
         }
-        const path = this.stripBase(window.location.pathname, this.base);
+        const path = this.stripBase(window.location.pathname , this.base);
         return path  + window.location.hash;
     }
     stripBase(pathname, base) {

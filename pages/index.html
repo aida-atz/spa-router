@@ -7,11 +7,13 @@
     <body>
         <script src="../assets/js/router.js" type="module"></script>
         <script type="module">
+            // import index from "../views/index.js"
+            // document.getElementById("app").innerHTML=index.template;
             import {createRouter , createWebHashHistory,createWebHistory} from "../assets/js/router.js";
             import routes from "../assets/js/routes.js";
             import guards from "../assets/js/globalGuards.js"
             const router = new createRouter({
-                history:createWebHashHistory(),
+                history:createWebHashHistory("/folder/#/app/"),
                 routes,
             })
 
@@ -24,6 +26,9 @@
             //     return true;
             // })
         </script>
+        <div id="app">
+
+        </div>
         <!-- <div class="main-nav">
             <ul>
                 <li>
@@ -40,6 +45,5 @@
         <div class="main-body">
             <router-view></router-view>
         </div>
-
     </body>
 </html>

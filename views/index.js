@@ -13,5 +13,8 @@ export default{
         </li>
     </ul>
 </div>
+<div class="main-body">
+    <router-view></router-view>
+</div>
     `
 }

@@ -16,10 +16,9 @@
                 history:createWebHistory("/app/"),
                 routes,
             })
-
             router.beforeEach((to,from)=>{
                 console.log("before Each");
-                return {path:"/home"};
+                return true
             })
             router.afterEach((to,from)=>{
                 console.log("after Each");

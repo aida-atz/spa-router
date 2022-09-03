@@ -1,15 +1,15 @@
 import instanceGuards from "./globalGuards.js";
-class historyStateNavigation{
-    constructor(){
+export default class historyStateNavigation{
+    constructor(routes){
         this.base="";
+        this.routes=routes;
     }
     findRouteByPath(path){
-        console.log(path , window.router.routes);
-        const result = window.router.routes.find(route=>route.path==path);
+        const result = this.routes.find(route=>route.path==path);
         if(!result) throw Error("route not find");
         return result;
     }
-    navigate(to,from){
+    runBeforeGuards(to,from){
         let guards = [];
         instanceGuards.beforeGuards.list().forEach(guard=>{
             guards.push(instanceGuards.guardToPromiseFn(guard, to, from));
@@ -25,8 +25,7 @@ class historyStateNavigation{
     changeLocation(to,from,state , replace=false,updateState=false){
         const url = this.base+to.path;
         if(!updateState){
-            this.navigate(to,from).then(()=>{
-                console.log("changeLocation");
+            this.runBeforeGuards(to,from).then(()=>{
                 window.history[replace ? "replaceState" : "pushState"](state,null,url);
                 this.renderComponent(to.component);
                 instanceGuards.triggerAfterEach(to , from);
@@ -34,7 +33,6 @@ class historyStateNavigation{
         }else{
             window.history.replaceState(state,null,url)
         }
-
     }
     renderComponent(component){
         const list = document.getElementsByTagName("router-view")[0];
@@ -51,7 +49,7 @@ class historyStateNavigation{
             })
         }
     }
-    push(to,from){
+   push(to,from){
         const currentState={
             ...history.state,
             forward:to.path,
@@ -80,39 +78,18 @@ class historyStateNavigation{
      * @return {string} - standard base
      */
 
-    createWebHashHistory(base){
+    static createWebHashHistory(base){
         base = base || location.pathname;
         if(!base.includes("#")) base+="#";
         return this.createWebHistory(base)
     }
-    createWebHistory(base){
+    static createWebHistory(base){
        if(!base){
            base="/"
        }
         base = base.replace(/\/$/ , "");
         this.base=base;
     }
-    // createCurrentLocation(){
-    //     const hashPos = this.base.indexOf('#');
-    //     if (hashPos > -1) { 
-    //         let slicePos = window.location.hash.includes(this.base.slice(hashPos))
-    //             ? this.base.slice(hashPos).length
-    //             : 1;
-    //         let pathFromHash = window.location.hash.slice(slicePos);
-    //         // prepend the starting slash to hash so the url starts with /#
-    //         if (pathFromHash[0] !== '/')
-    //             pathFromHash = '/' + pathFromHash;
-    //         return this.stripBase(pathFromHash, '');
-    //     }
-    //     const path = this.stripBase(window.location.pathname , this.base);
-    //     return path  + window.location.hash;
-    // }
-    // stripBase(pathname, base) {
-    //     // no base or base is not found at the beginning
-    //     if (!base || !pathname.toLowerCase().startsWith(base.toLowerCase()))
-    //         return pathname;
-    //     return pathname.slice(base.length) || '/';
-    // }
 }
-const useHistoryStateNavigation = new historyStateNavigation();
-export default useHistoryStateNavigation;
+// const useHistoryStateNavigation = new historyStateNavigation();
+// export default useHistoryStateNavigation;

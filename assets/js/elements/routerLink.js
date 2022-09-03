@@ -1,5 +1,5 @@
-import useHistoryStateNavigation from "../historyNavigation.js"
 class routerLink extends HTMLElement{
+    static router=null;
     constructor(){
         super();
     }
@@ -17,9 +17,10 @@ class routerLink extends HTMLElement{
         link.addEventListener("click",(e)=>{
             e.preventDefault();
             if(this.replace){
-                window.router.replace(this.attributes.to.value)
+         
+                routerLink.router.replace(this.attributes.to.value);
             }else{
-                window.router.push(this.attributes.to.value)
+                routerLink.router.push(this.attributes.to.value);
             }
         })
         this.parentNode.insertBefore(link,this.nextSibling);

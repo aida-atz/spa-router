@@ -19,6 +19,8 @@ export class createRouter{
             })
         }
         window.addEventListener("load",()=>{
+            console.log();
+            console.log("load page");
             this.replace(this.currentRouteState.current)
         });
         routerLink.router=this;

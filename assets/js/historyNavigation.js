@@ -5,9 +5,28 @@ export default class historyStateNavigation{
         this.routes=routes;
     }
     findRouteByPath(path){
-        const result = this.routes.find(route=>route.path==path);
+        console.log(this.routes);
+        const routeParams={};
+        const pathSegments = path.split("/").slice(1);
+        const result = this.routes.find(route=>{
+            const routePathSegments = route.path.split("/").slice(1);
+            if(routePathSegments.length!==pathSegments.length) return false;
+            const match = routePathSegments.every((routePathSegment, i) => {
+                return routePathSegment === pathSegments[i] || routePathSegment[0] === ':';
+            });
+            if(match){
+                routePathSegments.forEach((segment, i) => {
+                    if (segment[0] === ':') {
+                        const propName = segment.slice(1);
+                        routeParams[propName] = decodeURIComponent(pathSegments[i]);
+                    }
+                });
+            }
+            return match;
+        })
         if(!result) throw Error("route not find");
-        return result;
+        const route = {path , params:{...routeParams} , component:result.component , name:result.name}
+        return route;
     }
     runBeforeGuards(to,from){
         let guards = [];
@@ -50,6 +69,7 @@ export default class historyStateNavigation{
         }
     }
    push(to,from){
+       console.log(to);
         const currentState={
             ...history.state,
             forward:to.path,
@@ -91,5 +111,3 @@ export default class historyStateNavigation{
         this.base=base;
     }
 }
-// const useHistoryStateNavigation = new historyStateNavigation();
-// export default useHistoryStateNavigation;

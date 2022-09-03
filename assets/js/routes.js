@@ -11,12 +11,12 @@ const routes=[
     },
     {
         name:"about",
-        path:"/about",
+        path:"/about/:id",
         component:()=>import("../../views/about.js"),
     },
     {
         name:"contact",
-        path:"/contact",
+        path:"/contact/:id",
         component:()=> import("../../views/contact.js"),
         beforeEnter: (to, from) => {
             console.log("beforeEnter");

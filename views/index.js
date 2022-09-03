@@ -6,10 +6,10 @@ export default{
             <router-link to="/home">home</router-link>
         </li>
         <li>
-            <router-link to="/about">about</router-link>
+            <router-link to="/about/1234">about</router-link>
         </li>
         <li>
-            <router-link to="/contact">contact</router-link>
+            <router-link to="/contact/1234">contact</router-link>
         </li>
     </ul>
 </div>

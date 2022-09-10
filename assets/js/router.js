@@ -19,25 +19,23 @@ export class createRouter{
             })
         }
         window.addEventListener("load",()=>{
-            console.log();
-            console.log("load page");
             this.replace(this.currentRouteState.current)
         });
         routerLink.router=this;
         window.customElements.define("router-link",routerLink);
         window.customElements.define("router-view",routerView);
         window.addEventListener('popstate',({state})=>{
-            const result = this.#historyNavigationInstance.findRouteByPath(state.current);
+            const result = this.#historyNavigationInstance.findRoute(state.current);
             this.#historyNavigationInstance.renderComponent(result.component);
         })
     }
     push(to){
-        to = this.#historyNavigationInstance.findRouteByPath(to);
-        const from = this.#historyNavigationInstance.findRouteByPath(this.currentRouteState.current);
+        to = this.#historyNavigationInstance.findRoute(to);
+        const from = this.#historyNavigationInstance.findRoute(this.currentRouteState.current);
         this.#historyNavigationInstance.push(to , from);
     };
     replace(to , state=null){
-        to = this.#historyNavigationInstance.findRouteByPath(to);
+        to = this.#historyNavigationInstance.findRoute(to);
         this.#historyNavigationInstance.replace(to,state);
     };
     beforeEach(handler){

@@ -6,7 +6,7 @@ const routes=[
     },
     {
         name:"home",
-        path:"/home",
+        path:"/home/:id",
         component:()=> import("../../views/home.js"),
     },
     {

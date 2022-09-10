@@ -1,3 +1,4 @@
+import isJson from "../utilities/checkJson.js";
 class routerLink extends HTMLElement{
     static router=null;
     constructor(){
@@ -16,12 +17,15 @@ class routerLink extends HTMLElement{
         link.setAttribute("href",this.attributes.to.value);
         link.addEventListener("click",(e)=>{
             e.preventDefault();
-            if(this.replace){
-         
-                routerLink.router.replace(this.attributes.to.value);
-            }else{
-                routerLink.router.push(this.attributes.to.value);
+            const jsonType = isJson(this.attributes.to.value);
+            let to = null;
+            if(!jsonType) to=this.attributes.to.value;
+            else{
+                const parsedResult = JSON.parse(this.attributes.to.value);
+                to=parsedResult;
             }
+            if(this.replace) routerLink.router.replace(to);
+            else routerLink.router.push(to);
         })
         this.parentNode.insertBefore(link,this.nextSibling);
         this.remove();

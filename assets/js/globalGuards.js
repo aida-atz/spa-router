@@ -27,7 +27,7 @@ class guards{
                     reject(valid);
                 }
                 else if (typeof valid == "object") {
-                    const route = useHistoryStateNavigation.findRouteByPath(valid.path);
+                    const route = useHistoryStateNavigation.findRoute(valid.path);
                     useHistoryStateNavigation.push( route , from);
                     reject(new Error`Redirected from "${from.path}" to "${route.path}" via a navigation guard.`);
                 }

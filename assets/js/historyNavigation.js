@@ -4,10 +4,20 @@ export default class historyStateNavigation{
         this.base="";
         this.routes=routes;
     }
-    findRouteByPath(path){
-        console.log(this.routes);
+    findRoute(to){
+        let route = null;
+        if(typeof to=="string"){
+            route=this.findRouteByPath(to)
+        }else if(typeof to =="object"){
+            if(to.name){
+                route=this.findRouteByName(to);
+            }
+        }
+        return route;
+    }
+    findRouteByPath(to){
         const routeParams={};
-        const pathSegments = path.split("/").slice(1);
+        const pathSegments = to.split("/").slice(1);
         const result = this.routes.find(route=>{
             const routePathSegments = route.path.split("/").slice(1);
             if(routePathSegments.length!==pathSegments.length) return false;
@@ -25,9 +35,33 @@ export default class historyStateNavigation{
             return match;
         })
         if(!result) throw Error("route not find");
-        const route = {path , params:{...routeParams} , component:result.component , name:result.name}
+        const route = {path:to , params:{...routeParams} , component:result.component , name:result.name};
         return route;
     }
+    findRouteByName(to){
+        const routeParams={};
+        let path = "";
+       const result = this.routes.find(route=>{
+            if(to.name==route.name){
+                const routePathSegments = route.path.split("/").slice(1);
+                routePathSegments.forEach((segment, i) => {
+                    if (segment[0] === ':') {
+                        const propName = segment.slice(1);
+                        if(!to.params || !to.params[propName]) throw Error("param nadare");
+                        routeParams[propName]=to.params[propName];
+                        path=path.concat(`/${to.params[propName]}`);
+                    }
+                    else{
+                        path=path.concat(`/${segment}`);
+                    }
+                });
+                return route;
+            }
+       })
+       const route = {path , params:{...routeParams} , component:result.component , name:result.name};
+       return route;
+    }
+
     runBeforeGuards(to,from){
         let guards = [];
         instanceGuards.beforeGuards.list().forEach(guard=>{
@@ -50,7 +84,7 @@ export default class historyStateNavigation{
                 instanceGuards.triggerAfterEach(to , from);
             }).catch(err=>{throw err}) 
         }else{
-            window.history.replaceState(state,null,url)
+            window.history.replaceState(state,null,url);
         }
     }
     renderComponent(component){
@@ -69,7 +103,6 @@ export default class historyStateNavigation{
         }
     }
    push(to,from){
-       console.log(to);
         const currentState={
             ...history.state,
             forward:to.path,

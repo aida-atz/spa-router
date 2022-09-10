@@ -11,6 +11,9 @@ export default{
         <li>
             <router-link to="/contact/1234">contact</router-link>
         </li>
+        <li>
+            <router-link to='{"name":"home" , "params":{"id":1234}}'>home</router-link>
+        </li>
     </ul>
 </div>
 <div class="main-body">

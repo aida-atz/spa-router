@@ -35,6 +35,11 @@ export default class historyStateNavigation{
             return match;
         })
         if(!result) throw Error("route not find");
+        let startQuery = to.split("?").slice(1);
+        startQuery=startQuery[0].replace(/=/g,":").replace(/&/g,",").split(",");
+        console.log(startQuery);
+        console.log({...startQuery});
+        console.log(JSON.parse({startQuery}));
         const route = {path:to , params:{...routeParams} , component:result.component , name:result.name};
         return route;
     }

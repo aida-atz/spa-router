@@ -39,7 +39,8 @@ export default class historyStateNavigation{
         return route;
     }
     findRouteByName(to){
-        const routeParams={};
+        let routeParams={};
+        let routeQuerys={};
         let path = "";
        const result = this.routes.find(route=>{
             if(to.name==route.name){
@@ -55,10 +56,17 @@ export default class historyStateNavigation{
                         path=path.concat(`/${segment}`);
                     }
                 });
+                if(to.query) {
+                    routeQuerys=to.query;
+                    Object.keys(routeQuerys).forEach((query , index)=>{
+                        if(index==0) path=path.concat(`?${query}=${routeQuerys[query]}`);
+                        else path=path.concat(`&${query}=${routeQuerys[query]}`);
+                    })
+                }
                 return route;
             }
        })
-       const route = {path , params:{...routeParams} , component:result.component , name:result.name};
+       const route = {path , params:{...routeParams} , component:result.component , name:result.name , query:{...routeQuerys}};
        return route;
     }
 

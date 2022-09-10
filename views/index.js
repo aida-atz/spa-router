@@ -3,7 +3,7 @@ export default{
     <div class="main-nav">
     <ul>
         <li>
-            <router-link to="/home">home</router-link>
+            <router-link to="/home/1234/aida">home</router-link>
         </li>
         <li>
             <router-link to="/about/1234">about</router-link>
@@ -12,7 +12,7 @@ export default{
             <router-link to="/contact/1234">contact</router-link>
         </li>
         <li>
-            <router-link to='{"name":"home" , "params":{"id":1234}}'>home</router-link>
+            <router-link to='{"name":"home" , "params":{"id":1234} , "query":{"name":"aida","lastname":"attarzade"}}'>home</router-link>
         </li>
     </ul>
 </div>

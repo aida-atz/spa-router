@@ -9,16 +9,19 @@ export class createRouter{
         this.routes=data.routes;
         this.currentRouteState= window.history.state;
         this.#historyNavigationInstance=new historyStateNavigation(this.routes);
+        console.log(`${location.pathname}${location.search}`);
         if(!this.currentRouteState){
-            this.replace(location.pathname,{
+            console.log(location);
+            this.replace(`${location.pathname}${location.search}`,{
                 back:null,
-                current:location.pathname,
+                current:`${location.pathname}${location.search}`,
                 currentName:null,
                 forward:null,
                 position:window.history.length-1,
             })
         }
         window.addEventListener("load",()=>{
+
             this.replace(this.currentRouteState.current)
         });
         routerLink.router=this;

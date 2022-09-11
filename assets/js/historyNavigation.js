@@ -17,7 +17,8 @@ export default class historyStateNavigation{
     }
     findRouteByPath(to){
         const routeParams={};
-        const pathSegments = to.split("/").slice(1);
+        const urlSegments=to.split("?");
+        const pathSegments = urlSegments[0].split("/").slice(1);
         const result = this.routes.find(route=>{
             const routePathSegments = route.path.split("/").slice(1);
             if(routePathSegments.length!==pathSegments.length) return false;
@@ -35,12 +36,9 @@ export default class historyStateNavigation{
             return match;
         })
         if(!result) throw Error("route not find");
-        let startQuery = to.split("?").slice(1);
-        startQuery=startQuery[0].replace(/=/g,":").replace(/&/g,",").split(",");
-        console.log(startQuery);
-        console.log({...startQuery});
-        console.log(JSON.parse({startQuery}));
-        const route = {path:to , params:{...routeParams} , component:result.component , name:result.name};
+        const queries=Object.fromEntries(new URLSearchParams(urlSegments[1]));
+        const route = {path:to , params:{...routeParams} , component:result.component , name:result.name,query:{...queries}};
+        console.log(route);
         return route;
     }
     findRouteByName(to){

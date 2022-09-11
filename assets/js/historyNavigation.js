@@ -19,6 +19,7 @@ export default class historyStateNavigation{
         const routeParams={};
         const urlSegments=to.split("?");
         const pathSegments = urlSegments[0].split("/").slice(1);
+        const searchParams = new URLSearchParams(urlSegments[1]);
         const result = this.routes.find(route=>{
             const routePathSegments = route.path.split("/").slice(1);
             if(routePathSegments.length!==pathSegments.length) return false;
@@ -36,9 +37,11 @@ export default class historyStateNavigation{
             return match;
         })
         if(!result) throw Error("route not find");
-        const queries=Object.fromEntries(new URLSearchParams(urlSegments[1]));
-        const route = {path:to , params:{...routeParams} , component:result.component , name:result.name,query:{...queries}};
-        console.log(route);
+        const route = {path:to , params:{...routeParams} , component:result.component , name:result.name};
+        if(Array.from(searchParams.keys()).length>0) {
+            const queries=Object.fromEntries(new URLSearchParams(urlSegments[1]))
+            route.query=queries;
+        }
         return route;
     }
     findRouteByName(to){
